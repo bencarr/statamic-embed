@@ -2,13 +2,13 @@
 
 namespace BenCarr\Embed\Actions;
 
+use BenCarr\Embed\Helpers\EmbedCache;
 use Embed\Embed;
-use Embed\Extractor;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Facades\Cache;
 
-class FetchEmbed
+class EmbedManager
 {
     protected Repository $cache;
 
@@ -43,7 +43,7 @@ class FetchEmbed
             throw new HttpClientException($response->getReasonPhrase(), $response->getStatusCode());
         }
 
-        return $this->transform($info);
+        return EmbedCache::from($info);
     }
 
     public function refresh()
@@ -51,31 +51,6 @@ class FetchEmbed
         Cache::forget($this->getCacheKey());
 
         return $this->get();
-    }
-
-    protected function transform(Extractor $response): object
-    {
-        return (object) [
-            'authorName' => $response->authorName,
-            'authorUrl' => $response->authorUrl,
-            'cms' => $response->cms,
-            'code' => $response->code,
-            'description' => $response->description,
-            'favicon' => $response->favicon,
-            'feeds' => $response->feeds,
-            'icon' => $response->icon,
-            'image' => $response->image,
-            'keywords' => $response->keywords,
-            'language' => $response->language,
-            'languages' => $response->languages,
-            'license' => $response->license,
-            'providerName' => $response->providerName,
-            'providerUrl' => $response->providerUrl,
-            'publishedTime' => $response->publishedTime,
-            'redirect' => $response->redirect,
-            'title' => $response->title,
-            'url' => $response->url,
-        ];
     }
 
     protected function getCacheKey()
