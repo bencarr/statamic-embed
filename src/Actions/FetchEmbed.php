@@ -4,14 +4,19 @@ namespace BenCarr\Embed\Actions;
 
 use Embed\Embed;
 use Embed\Extractor;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Facades\Cache;
 
 class FetchEmbed
 {
+    protected Repository $cache;
+
     public function __construct(
         public string $url
     ) {
+        $this->cache = Cache::store(config('statamic.embed.cache.driver'));
+        $this->ttl = config('statamic.embed.cache.ttl');
     }
 
     public static function url(string $url)
@@ -21,15 +26,24 @@ class FetchEmbed
 
     public function get()
     {
-        return Cache::rememberForever($this->getCacheKey(), function () {
-            $embed = (new Embed)->get($this->url);
-            $response = $embed->getResponse();
-            if ($response->getStatusCode() < 200 && $response->getStatusCode() >= 300) {
-                throw new HttpClientException($response->getReasonPhrase(), $response->getStatusCode());
-            }
+        if ($this->ttl) {
+            return $this->cache->remember($this->getCacheKey(), $this->ttl, fn() => $this->fetch());
+        }
 
-            return $this->transform($embed);
-        });
+        return $this->cache->rememberForever($this->getCacheKey(), fn() => $this->fetch());
+    }
+
+    public function fetch()
+    {
+        $embed = app(Embed::class);
+        $info = $embed->get($this->url);
+
+        $response = $info->getResponse();
+        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
+            throw new HttpClientException($response->getReasonPhrase(), $response->getStatusCode());
+        }
+
+        return $this->transform($info);
     }
 
     public function refresh()
@@ -39,9 +53,9 @@ class FetchEmbed
         return $this->get();
     }
 
-    protected function transform(Extractor $response)
+    protected function transform(Extractor $response): object
     {
-        return [
+        return (object) [
             'authorName' => $response->authorName,
             'authorUrl' => $response->authorUrl,
             'cms' => $response->cms,
