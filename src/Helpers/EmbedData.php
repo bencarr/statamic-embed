@@ -12,6 +12,7 @@ class EmbedData implements Arrayable, Htmlable
 
     public function __construct(
         public string $url,
+        public bool $preview = true,
     ) {
         $this->initChainableAttributes();
     }
