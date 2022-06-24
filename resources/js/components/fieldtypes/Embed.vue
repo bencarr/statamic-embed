@@ -11,14 +11,37 @@
 			/>
 		</div>
 
-		<button type="button" v-if="url" class="flex items-center space-x-2 text-2xs text-grey-60 uppercase" @click="preview = !preview">
-			<svg class="transition duration-200 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" :class="{'rotate-90': preview}">
-				<path fill-rule="evenodd"
-					  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-					  clip-rule="evenodd"></path>
-			</svg>
-			{{ __('Preview') }}
-		</button>
+		<div class="flex items-center justify-between gap-4" v-if="url">
+			<button type="button"
+					class="flex items-center text-2xs text-grey-60 uppercase"
+					@click="preview = !preview">
+				<svg class="transition duration-200 w-4 h-4"
+					 fill="currentColor"
+					 viewBox="0 0 20 20"
+					 xmlns="http://www.w3.org/2000/svg"
+					 :class="{'rotate-90': preview}">
+					<path fill-rule="evenodd"
+						  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+						  clip-rule="evenodd"></path>
+				</svg>
+				{{ __('embed::fieldtype.preview.button') }}
+			</button>
+			<button type="button" @click="onRefresh" class="flex items-center space-x-2 text-xs text-grey hover:text-grey-80">
+				<svg class="transition w-4 h-4 mr-.5"
+					 fill="none"
+					 stroke="currentColor"
+					 viewBox="0 0 24 24"
+					 xmlns="http://www.w3.org/2000/svg"
+					 :class="{'animate-spin': refreshing}"
+				>
+					<path stroke-linecap="round"
+						  stroke-linejoin="round"
+						  stroke-width="2"
+						  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+				</svg>
+				{{ __('embed::fieldtype.refresh.button') }}
+			</button>
+		</div>
 		<div v-if="preview">
 			<div class="relative rounded overflow-hidden" v-if="url">
 				<transition
@@ -53,6 +76,7 @@ export default {
 			// Flags for state changes
 			metaChanging: false,
 			fetching: true,
+			refreshing: false,
 
 			// Core data
 			url: this.value ? this.value.url : null,
@@ -81,7 +105,7 @@ export default {
 				url: this.url,
 				preview: this.preview,
 			}
-		}
+		},
 	},
 
 	methods: {
@@ -91,8 +115,28 @@ export default {
 			this.$refs.iframe.style.height = this.$refs.iframe.contentWindow.document.body.scrollHeight
 		},
 		onPaste() {
-			this.url = this.buffer;
-		}
+			this.url = this.buffer
+		},
+		onRefresh() {
+			this.refreshing = true;
+			this.fetching = true;
+			this.$axios
+				.post(cp_url('embed-fieldtype/refresh'), {url: this.url})
+				.then(response => {
+					this.refreshing = false
+					this.$toast.success(__('embed::fieldtype.refresh.success'))
+					if (this.preview) {
+						this.$refs.iframe.contentWindow.location.reload()
+					} else {
+						this.fetching = false
+					}
+				})
+				.catch(response => {
+					this.$toast.error(__('embed::fieldtype.refresh.failed'))
+					this.refreshing = false
+					this.fetching = false
+				})
+		},
 	},
 	watch: {
 		meta(meta) {
