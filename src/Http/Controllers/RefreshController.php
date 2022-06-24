@@ -7,7 +7,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class FetchController extends Controller
+class RefreshController extends Controller
 {
     use ValidatesRequests;
 
@@ -17,6 +17,6 @@ class FetchController extends Controller
             'url' => urldecode($request->get('url')),
         ], ['url' => ['required', 'url']])->validate();
 
-        return FetchEmbed::url($valid['url'])->get();
+        return FetchEmbed::url($valid['url'])->refresh();
     }
 }
