@@ -40,6 +40,11 @@ class EmbedData implements Arrayable, Htmlable
         ]), $this->url);
     }
 
+    public function __get(string $name)
+    {
+        return $this->cache->$name;
+    }
+
     public function __toString(): string
     {
         return $this->toHtml();
