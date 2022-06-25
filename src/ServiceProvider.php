@@ -4,6 +4,7 @@ namespace BenCarr\Embed;
 
 use Embed\Embed;
 use Embed\Http\Crawler;
+use GuzzleHttp\Client;
 use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
@@ -37,9 +38,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'embed');
 
         $this->app->singleton(Embed::class, function () {
-            $client = new (config('statamic.embed.client.class'));
-            $client->setSettings(config('statamic.embed.client.settings'));
-
+            $client = new Client(config('statamic.embed.client_settings', []));
             $embed = (new Embed(new Crawler($client)));
             $embed->setSettings(config('statamic.embed.settings'));
 
