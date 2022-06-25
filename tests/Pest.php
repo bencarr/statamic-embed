@@ -2,6 +2,7 @@
 
 use Illuminate\Validation\ValidationException;
 use Statamic\Entries\Entry;
+use Statamic\Facades\Entry as EntryFacade;
 use Statamic\Fields\Field;
 use Statamic\Fields\Fields;
 use Tests\Support\TestEmbed;
@@ -21,21 +22,16 @@ expect()->extend('toHaveValidationErrorForField', function ($handle) {
 
 function page(array $data = []): Entry
 {
-    return tap(\Statamic\Facades\Entry::make()->collection('pages')->data($data))->save();
+    return tap(EntryFacade::make()->collection('pages')->data($data))->save();
 }
 
 function pageWithEmbed(string $url): Entry
 {
-    return tap(\Statamic\Facades\Entry::make()->collection('pages')
+    return tap(EntryFacade::make()->collection('pages')
         ->data([
-            'embed' => (array) $url,
+            'embed' => TestEmbed::url($url)->toArray(),
         ])
     )->save();
-}
-
-function pageWithLinkValue(TestEmbed $config): Fields
-{
-    return page()->blueprint()->fields()->addValues(['embed' => (array) $config]);
 }
 
 function field(array $config = []): Field

@@ -12,6 +12,7 @@ use Statamic\Statamic;
 abstract class TestCase extends OrchestraTestCase
 {
     protected Filesystem $files;
+
     protected $siteFixturePath = __DIR__.'/Fixtures/site';
 
     protected function getPackageProviders($app)
@@ -69,7 +70,7 @@ abstract class TestCase extends OrchestraTestCase
         $overrides = [
             'statamic/users',
         ];
-        foreach($overrides as $path) {
+        foreach ($overrides as $path) {
             $files->delete(config_path("{$path}.php"));
             $files->copy("{$this->siteFixturePath}/config/{$path}.php", config_path("{$path}.php"));
             $app['config']->set(str_replace('/', '.', $path), require("{$this->siteFixturePath}/config/{$path}.php"));
