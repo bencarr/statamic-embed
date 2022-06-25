@@ -12,11 +12,14 @@ class EmbedManager
 {
     protected Repository $cache;
 
+    protected string $cacheKey;
+
     public function __construct(
         public string $url
     ) {
         $this->cache = Cache::store(config('statamic.embed.cache.driver'));
         $this->ttl = config('statamic.embed.cache.ttl');
+        $this->cacheKey = self::key($url);
     }
 
     public static function url(string $url)
@@ -27,10 +30,10 @@ class EmbedManager
     public function get()
     {
         if ($this->ttl) {
-            return $this->cache->remember($this->getCacheKey(), $this->ttl, fn() => $this->fetch());
+            return $this->cache->remember($this->cacheKey, $this->ttl, fn() => $this->fetch());
         }
 
-        return $this->cache->rememberForever($this->getCacheKey(), fn() => $this->fetch());
+        return $this->cache->rememberForever($this->cacheKey, fn() => $this->fetch());
     }
 
     public function fetch()
@@ -48,13 +51,13 @@ class EmbedManager
 
     public function refresh()
     {
-        Cache::forget($this->getCacheKey());
+        Cache::forget($this->cacheKey);
 
         return $this->get();
     }
 
-    protected function getCacheKey()
+    public static function key(string $url): string
     {
-        return str($this->url)->lower()->prepend('embed.');
+        return str($url)->lower()->prepend('embed.')->toString();
     }
 }
