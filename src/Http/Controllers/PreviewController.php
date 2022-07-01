@@ -13,17 +13,16 @@ class PreviewController extends Controller
 
     public function index(Request $request)
     {
-        try {
-            $valid = validator([
-                'url' => urldecode($request->get('url')),
-            ], ['url' => ['required', 'url']])->validate();
+        $valid = validator([
+            'url' => urldecode($request->get('url')),
+        ], ['url' => ['required', 'url']])->validate();
 
-            $embed = EmbedManager::url($valid['url'])->get();
+        $embed = EmbedManager::url($valid['url'])->get();
 
-            return view('embed::preview', ['embed' => $embed]);
-        } catch (\Throwable $exception)
-        {
-            return view('embed::error', ['exception' => $exception]);
+        if ( ! $embed) {
+            return view('embed::error');
         }
+
+        return view('embed::preview', ['embed' => $embed]);
     }
 }

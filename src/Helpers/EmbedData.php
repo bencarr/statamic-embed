@@ -4,6 +4,7 @@ namespace BenCarr\Embed\Helpers;
 
 use BenCarr\Embed\Actions\EmbedManager;
 use BenCarr\Embed\Concerns\HasChainableAttributes;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -11,7 +12,7 @@ class EmbedData implements Arrayable, Htmlable
 {
     use HasChainableAttributes;
 
-    public EmbedCache $cache;
+    public ?EmbedCache $cache;
 
     public function __construct(
         public string $url,
@@ -23,14 +24,14 @@ class EmbedData implements Arrayable, Htmlable
 
     public function toHtml()
     {
-        if ($code = $this->cache->code) {
+        if ($code = $this->cache?->code) {
             return $code->html;
         }
 
-        if ($image = $this->cache->image) {
+        if ($image = $this->cache?->image) {
             return sprintf('<img %s />', $this->attributes->merge([
                 'src' => $image,
-                'alt' => $this->cache->description,
+                'alt' => $this->cache?->description,
             ]));
         }
 
@@ -42,7 +43,7 @@ class EmbedData implements Arrayable, Htmlable
 
     public function __get(string $name)
     {
-        return $this->cache->$name;
+        return $this->cache?->$name;
     }
 
     public function __toString(): string

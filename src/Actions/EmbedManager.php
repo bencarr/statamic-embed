@@ -43,7 +43,8 @@ class EmbedManager
 
         $response = $info->getResponse();
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw new HttpClientException($response->getReasonPhrase(), $response->getStatusCode());
+            return null;
+            // throw new HttpClientException($response->getReasonPhrase(), $response->getStatusCode());
         }
 
         return EmbedCache::from($info);

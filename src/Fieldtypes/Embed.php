@@ -41,4 +41,13 @@ class Embed extends Fieldtype
             'preview' => $data->preview ?? true,
         ];
     }
+
+    public function preProcessIndex($data)
+    {
+        if (!$data) {
+            return null;
+        }
+
+        return $data['url'];
+    }
 }
