@@ -67,8 +67,6 @@
 </template>
 
 <script>
-import qs from 'qs'
-
 export default {
 	mixins: [Fieldtype],
 	data() {
@@ -93,7 +91,7 @@ export default {
 		previewUrl() {
 			if (!this.url) return null
 
-			return cp_url('embed-fieldtype/preview', {url: this.url}) + '?' + qs.stringify({url: encodeURIComponent(this.url)})
+			return cp_url('embed-fieldtype/preview') + '?' + (new URLSearchParams({ url: this.url })).toString()
 		},
 		code() {
 			return _.get(this, ['preview', 'code', 'html'])
