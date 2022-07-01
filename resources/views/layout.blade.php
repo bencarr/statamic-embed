@@ -3,7 +3,7 @@
 <head>
     <title>Embed Preview</title>
 
-    <link rel="stylesheet" type="text/css" href="/vendor/statamic-embed/dist/css/preview.css"/>
+    <link rel="stylesheet" type="text/css" href="/vendor/statamic-embed/css/preview.css"/>
 </head>
 <body class="box-border overflow-hidden">
 
