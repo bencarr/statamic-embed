@@ -19,10 +19,6 @@ class ServiceProvider extends AddonServiceProvider
         'cp' => __DIR__.'/../routes/cp.php',
     ];
 
-    protected $stylesheets = [
-        __DIR__.'/../dist/css/preview.css',
-    ];
-
     protected $scripts = [
         __DIR__.'/../dist/js/addon.js',
     ];
@@ -32,6 +28,10 @@ class ServiceProvider extends AddonServiceProvider
         $this->publishes([
             __DIR__.'/../config/statamic/embed.php' => config_path('statamic/embed.php'),
         ], 'embed-config');
+
+        $this->publishes([
+            __DIR__.'/../dist/css/preview.css' => public_path("vendor/statamic-embed/css/preview.css"),
+        ], 'embed');
     }
 
     public function register()
