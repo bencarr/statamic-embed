@@ -41,10 +41,11 @@ class ServiceProvider extends AddonServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/statamic/embed.php', 'statamic.embed');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'embed');
 
-        $this->app->singleton(Embed::class, function () {
-            $client = new Client(config('statamic.embed.client_settings', []));
+        $this->app->singleton(Embed::class, function ($app) {
+            $config = collect($app['config']['statamic']['embed']);
+            $client = new Client($config->get('client_settings', []));
             $embed = (new Embed(new Crawler($client)));
-            $embed->setSettings(config('statamic.embed.settings'));
+            $embed->setSettings($config->get('settings', []));
 
             return $embed;
         });
