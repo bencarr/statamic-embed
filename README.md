@@ -62,13 +62,13 @@ You can find the published configuration in `config/statamic/embed.php`.
 
 ### Cache
 
-Embed uses Laravel’s default cache driver by default, but this can be customized using the `cache.driver` setting. By default, Embed data is cached forever (with the option to manually refresh from the control panel). You can shorten the TTL using the `cache.ttl` setting.
+Embed uses Laravel’s default cache driver by default, but this can be customized using the `cache.driver` setting, or by setting the `EMBED_CACHE_DRIVER` environment variable. By default, Embed data is cached forever (with the option to manually refresh from the control panel). You can shorten the TTL using the `cache.ttl` setting, or by setting the `EMBED_CACHE_TTL` environment variable.
 
 ```php
 return [
     'cache' => [
         'driver' => 'redis',
-        'ttl' => 60 * 60 * 24 * 365,    
+        'ttl' => 60 * 60 * 24 * 365, // 1 Year
     ]
 ];
 ```

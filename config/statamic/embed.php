@@ -4,7 +4,7 @@ return [
     'settings' => [],
     'client_settings' => [],
     'cache' => [
-        'driver' => null,
-        'ttl' => 0,
+        'driver' => env('EMBED_CACHE_DRIVER'),
+        'ttl' => env('EMBED_CACHE_TTL', 0),
     ],
 ];
