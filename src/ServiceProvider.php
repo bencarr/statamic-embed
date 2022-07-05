@@ -44,7 +44,8 @@ class ServiceProvider extends AddonServiceProvider
         $this->app->singleton(Embed::class, function () {
             $client = new Client(config('statamic.embed.client_settings', []));
             $embed = (new Embed(new Crawler($client)));
-            if ($settings = (array) config('statamic.embed.settings')) {
+            $settings = config('statamic.embed.settings', []);
+            if ($settings && is_array($settings)) {
                 $embed->setSettings($settings);
             }
 
