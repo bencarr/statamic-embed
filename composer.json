@@ -15,7 +15,7 @@
         "php": "^8.0",
         "embed/embed": "^4.4",
         "pixelfear/composer-dist-plugin": "^0.1.5",
-        "statamic/cms": "3.3.*"
+        "statamic/cms": "^3.3"
     },
     "require-dev": {
         "nunomaduro/collision": "^6.1",
